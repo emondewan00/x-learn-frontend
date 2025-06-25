@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import loginAction from "@/actions/loginAction";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,9 +23,17 @@ const Login = () => {
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  if (session) {
+    router.push("/");
+    return <div>Redirecting...</div>;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login form submitted:", formData);
+    await loginAction(formData);
   };
 
   return (

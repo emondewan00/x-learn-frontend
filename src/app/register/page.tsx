@@ -12,18 +12,40 @@ import {
 } from "@/components/ui/card";
 import { BookOpen, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  if (session) {
+    router.push("/");
+    return <div>Redirecting...</div>;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Register form submitted:", formData);
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const response = await fetch(baseUrl + "/auth/register", {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const user = await response.json();
+    if (user) {
+      router.push("/login");
+    }
   };
 
   return (
@@ -47,14 +69,14 @@ const Register = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="fullname">Full name</Label>
               <Input
-                id="username"
+                id="fullname"
                 type="text"
-                placeholder="Choose a username"
-                value={formData.username}
+                placeholder="Enter your full name"
+                value={formData.name}
                 onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value })
+                  setFormData({ ...formData, name: e.target.value })
                 }
                 required
               />

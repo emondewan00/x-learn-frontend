@@ -1,11 +1,22 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Menu, X, BookOpen } from "lucide-react";
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const { data: session } = useSession();
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -40,9 +51,41 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4 ml-4">
-            <Link href="/register">
-              <Button className="bg-blue-600 hover:bg-blue-700">Sign Up</Button>
-            </Link>
+            {session ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div className="size-10 bg-gray-300 rounded-full cursor-pointer" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {session.user?.role === "admin" ? (
+                    <Link href="/admin/dashboard">
+                      <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                    </Link>
+                  ) : (
+                    <>
+                      <DropdownMenuItem>My Courses</DropdownMenuItem>
+                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuItem>
+                    <Button
+                      onClick={() => signOut()}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      Logout
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/register">
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  Sign Up
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -75,27 +118,56 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="flex flex-col space-y-2 pt-4 border-t">
-                <Link href="/profile">
-                  <Button
-                    variant="ghost"
-                    className="justify-start text-gray-600 hover:text-blue-600 w-full"
-                  >
-                    Profile
-                  </Button>
-                </Link>
-                <Link href="/login">
-                  <Button
-                    variant="ghost"
-                    className="justify-start text-gray-600 hover:text-blue-600 w-full"
-                  >
-                    Log In
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button className="bg-blue-600 hover:bg-blue-700 w-full">
-                    Sign Up
-                  </Button>
-                </Link>
+                {session ? (
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <div className="size-10 bg-gray-300 rounded-full cursor-pointer" />
+                      <div>
+                        <p className="font-medium text-gray-800">
+                          {session?.user?.name}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {session?.user?.email}
+                        </p>
+                      </div>
+                    </div>
+                    {session.user?.role === "admin" ? (
+                      <Link href="/admin/dashboard">
+                        <Button className="bg-blue-600 hover:bg-blue-700 w-full">
+                          Dashboard
+                        </Button>
+                      </Link>
+                    ) : (
+                      <>
+                        <Link
+                          href="/my-courses"
+                          className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200 px-2 py-1"
+                        >
+                          My Courses
+                        </Link>
+                        <Link
+                          href="/profile"
+                          className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200 px-2 py-1"
+                        >
+                          Profile
+                        </Link>
+                      </>
+                    )}
+
+                    <Button
+                      onClick={() => signOut()}
+                      className="bg-blue-600 hover:bg-blue-700 w-full"
+                    >
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <Link href="/register">
+                    <Button className="bg-blue-600 hover:bg-blue-700 w-full">
+                      Sign Up
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
