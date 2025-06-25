@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import jwt from "jsonwebtoken";
+import { JWTDecodeParams, JWT } from "next-auth/jwt";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
@@ -13,13 +14,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   secret: process.env.AUTH_SECRET,
   jwt: {
-    async encode({ secret, token }) {
-      const encodedToken = jwt.sign(token, secret[0]);
-      return encodedToken;
+    async encode({ token, secret }) {
+      if (!token) throw new Error("Missing token");
+
+      return jwt.sign(token as object, secret[0]);
     },
-    async decode({ secret, token }) {
-      const decodedToken = jwt.verify(token, secret[0]);
-      return decodedToken;
+
+    async decode({ token, secret }: JWTDecodeParams): Promise<JWT | null> {
+      if (!token) return null;
+
+      try {
+        const decoded = jwt.verify(token, secret[0]);
+
+        return decoded as JWT;
+      } catch (err) {
+        console.error("JWT decode error:", err);
+        return null;
+      }
     },
   },
   providers: [
@@ -45,15 +56,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
 
       authorize: async (credentials) => {
-        if (!credentials) {
-          return null;
-        }
+        if (!credentials) return null;
 
         return {
-          id: credentials?.id,
-          name: credentials?.name,
-          email: credentials?.email,
-          role: credentials?.role,
+          id: credentials.id as string,
+          name: credentials.name as string,
+          email: credentials.email as string,
+          role: credentials.role as string,
         };
       },
     }),
@@ -66,17 +75,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email;
         token.role = user.role;
       }
-
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.role = token.role;
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
-
       return session;
     },
   },
