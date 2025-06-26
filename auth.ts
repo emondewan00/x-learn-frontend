@@ -3,6 +3,8 @@ import Credentials from "next-auth/providers/credentials";
 import jwt from "jsonwebtoken";
 import { JWTDecodeParams, JWT } from "next-auth/jwt";
 
+const secret = process.env.AUTH_SECRET;
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
@@ -12,19 +14,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
   },
   trustHost: true,
-  secret: process.env.AUTH_SECRET,
+  secret,
   jwt: {
-    async encode({ token, secret }) {
+    async encode({ token }) {
       if (!token) throw new Error("Missing token");
 
-      return jwt.sign(token as object, secret[0]);
+      return jwt.sign(token as object, secret as string);
     },
 
-    async decode({ token, secret }: JWTDecodeParams): Promise<JWT | null> {
+    async decode({ token }: JWTDecodeParams): Promise<JWT | null> {
       if (!token) return null;
 
       try {
-        const decoded = jwt.verify(token, secret[0]);
+        const decoded = jwt.verify(token, secret as string);
 
         return decoded as JWT;
       } catch (err) {
