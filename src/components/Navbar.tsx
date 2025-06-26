@@ -60,7 +60,7 @@ export function Navbar() {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {session.user?.role === "admin" ? (
-                    <Link href="/admin/dashboard">
+                    <Link href="/admin">
                       <DropdownMenuItem>Dashboard</DropdownMenuItem>
                     </Link>
                   ) : (
