@@ -9,58 +9,23 @@ import {
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { cookies } from "next/headers";
+import Image from "next/image";
+import { revalidatePath } from "next/cache";
 
-const AdminCoursePage = () => {
-  const courses = [
-    {
-      id: 1,
-      title: "Complete React Development",
-      instructor: "Sarah Johnson",
-      rating: 4.8,
-      students: 12450,
-      duration: "24 hours",
-      price: "$89",
-      image:
-        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=300&h=200&fit=crop",
-      category: "Web Development",
+const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
+const resource_url = process.env.NEXT_PUBLIC_RESOURCE_URL + "/thumbnails/";
+
+const AdminCoursePage = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authjs.session-token")?.value;
+
+  const response = await fetch(`${base_url}/courses/all`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-    {
-      id: 2,
-      title: "Python for Data Science",
-      instructor: "Dr. Michael Chen",
-      rating: 4.9,
-      students: 8930,
-      duration: "32 hours",
-      price: "$129",
-      image:
-        "https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?w=300&h=200&fit=crop",
-      category: "Data Science",
-    },
-    {
-      id: 3,
-      title: "UI/UX Design Masterclass",
-      instructor: "Emma Rodriguez",
-      rating: 4.7,
-      students: 15670,
-      duration: "18 hours",
-      price: "$79",
-      image:
-        "https://images.unsplash.com/photo-1559028006-448665bd7c7f?w=300&h=200&fit=crop",
-      category: "Design",
-    },
-    {
-      id: 4,
-      title: "Machine Learning Fundamentals",
-      instructor: "Prof. David Kim",
-      rating: 4.8,
-      students: 6780,
-      duration: "40 hours",
-      price: "$159",
-      image:
-        "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=300&h=200&fit=crop",
-      category: "AI & ML",
-    },
-  ];
+  });
+  const courses = await response.json();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pr-8">
@@ -70,14 +35,16 @@ const AdminCoursePage = () => {
         </Link>
       </Button>
 
-      {courses.map((course) => (
+      {courses?.data?.map((course) => (
         <Card
-          key={course.id}
+          key={course._id}
           className="group hover:shadow-lg transition-shadow duration-300"
         >
           <div className="relative overflow-hidden rounded-t-lg">
-            <img
-              src={course.image}
+            <Image
+              width={300}
+              height={200}
+              src={resource_url + course.image}
               alt={course.title}
               className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
             />
@@ -92,16 +59,16 @@ const AdminCoursePage = () => {
           <CardContent className="pt-0">
             <div className="grid grid-cols-2 gap-2 mb-2">
               <CardDescription className="text-sm line-clamp-2 text-muted-foreground">
-                <span>Total Modules : 20</span>
+                <span>Modules : {course.modulesCount || 0}</span>
               </CardDescription>
               <CardDescription className="text-sm line-clamp-2 text-muted-foreground">
-                <span>Duration : {course.duration}</span>
+                <span>Duration : 20 hours</span>
               </CardDescription>
               <CardDescription className="text-sm line-clamp-2 text-muted-foreground">
-                <span>Modules :20 </span>
+                <span>Lessons : {course.lessonsCount || 0} </span>
               </CardDescription>
               <CardDescription className="text-sm line-clamp-2 text-muted-foreground">
-                <span>Published :False</span>
+                <span>Published: {course.published ? "Yes" : "No"}</span>
               </CardDescription>
             </div>
 
@@ -109,13 +76,39 @@ const AdminCoursePage = () => {
               <span className="text-2xl font-bold text-blue-600">
                 {course.price}
               </span>
-              <div>
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <div className="flex items-center">
+                <Button
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                >
                   Edit
                 </Button>
-                <Button size="sm" className="bg-red-600 hover:bg-red-700 ml-2">
-                  Delete
-                </Button>
+
+                <form
+                  action={async () => {
+                    "use server";
+                    const response = await fetch(
+                      `${base_url}/courses/${course._id}`,
+                      {
+                        method: "DELETE",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
+                    );
+                    if (response.ok) {
+                      revalidatePath("/admin/courses");
+                    }
+                  }}
+                >
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="bg-red-600 hover:bg-red-700 ml-2 cursor-pointer"
+                  >
+                    Delete
+                  </Button>
+                </form>
               </div>
             </div>
           </CardContent>

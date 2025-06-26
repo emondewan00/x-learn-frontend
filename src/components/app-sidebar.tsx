@@ -27,7 +27,7 @@ const navigationItems = [
   {
     title: "Add Course",
     icon: Plus,
-    url: "#",
+    url: "/admin/courses/new",
   },
   {
     title: "Lives",
@@ -60,13 +60,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
-                isActive={item.isActive}
                 className="w-full justify-start gap-3 px-3 py-2.5 text-sm font-medium"
               >
-                <a href={item.url}>
+                <Link href={item.url}>
                   <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
