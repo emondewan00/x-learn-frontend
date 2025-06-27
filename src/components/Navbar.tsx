@@ -12,6 +12,7 @@ import {
 import { Menu, X, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -54,7 +55,15 @@ export function Navbar() {
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  <div className="size-10 bg-gray-300 rounded-full cursor-pointer" />
+                  <Avatar className="h-8 w-8 cursor-pointer">
+                    <AvatarImage
+                      src="/placeholder.svg?height=32&width=32"
+                      alt="User"
+                    />
+                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-xs">
+                      U
+                    </AvatarFallback>
+                  </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
