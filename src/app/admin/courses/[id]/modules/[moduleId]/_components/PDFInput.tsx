@@ -1,44 +1,42 @@
 "use client";
 
-import type React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, DragEvent, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { FileText, Upload, X, Check } from "lucide-react";
+import axiosClient from "@/lib/axios";
 
-export default function PDFInput() {
+type Props = {
+  lessonId: string;
+  resources: string[];
+};
+
+const PDFInput: React.FC<Props> = ({ lessonId, resources }) => {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [fileNames, setFileNames] = useState<string[]>(resources);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploaded, setUploaded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleDrag = (e: React.DragEvent) => {
+  const handleDrag = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
+    setDragActive(e.type === "dragenter" || e.type === "dragover");
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-
-    const droppedFiles = e.dataTransfer.files;
-    if (droppedFiles && droppedFiles.length > 0) {
-      handleFile(droppedFiles);
+    if (e.dataTransfer?.files?.length > 0) {
+      handleFile(e.dataTransfer.files);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    if (e.target.files && e.target.files.length > 0) {
+    if (e.target.files?.length) {
       handleFile(e.target.files);
     }
   };
@@ -53,54 +51,50 @@ export default function PDFInput() {
       alert("Some files were skipped. Only PDF files are allowed.");
     }
 
-    setFiles((prev) => [...prev, ...pdfFiles]);
+    setFiles(pdfFiles);
+    setFileNames(pdfFiles.map((file) => file.name));
     setUploaded(false);
-  };
-
-  const onButtonClick = () => {
-    inputRef.current?.click();
   };
 
   const removeFile = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+    setFileNames((prev) => prev.filter((_, i) => i !== index));
     setUploaded(false);
-    setUploadProgress(0);
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
+    if (inputRef.current) inputRef.current.value = "";
   };
 
-  const simulateUpload = () => {
+  const onButtonClick = () => inputRef.current?.click();
+
+  const handleUpload = async () => {
+    if (files.length === 0) return;
     setUploading(true);
-    setUploadProgress(0);
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
 
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setUploading(false);
-          setUploaded(true);
-          return 100;
-        }
-        return prev + 10;
+    try {
+      await axiosClient.patch(`/lessons/pdf/${lessonId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-    }, 200);
-  };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (
-      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-    );
+      setFiles([]);
+      if (inputRef.current) inputRef.current.value = "";
+
+      setUploaded(true);
+    } catch (error) {
+      console.error("Upload failed", error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
     <Card className="w-full mt-4">
       <CardContent className="p-6">
-        {files.length === 0 ? (
+        {fileNames.length === 0 ? (
           <div
             className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
               dragActive
@@ -119,13 +113,12 @@ export default function PDFInput() {
               multiple
               onChange={handleChange}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              aria-label="Upload PDF files"
             />
-
             <div className="space-y-4">
               <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center">
                 <Upload className="w-6 h-6 text-muted-foreground" />
               </div>
-
               <div className="space-y-2">
                 <p className="text-sm font-medium">
                   Drop your PDFs here, or{" "}
@@ -147,30 +140,32 @@ export default function PDFInput() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium">
-                Selected Files ({files.length})
+                Selected Files ({fileNames.length})
               </h3>
-              <Button variant="outline" size="sm" onClick={() => setFiles([])}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setFiles([]);
+                  setFileNames([]);
+                }}
+              >
                 Clear All
               </Button>
             </div>
 
             <div className="space-y-2 max-h-60 overflow-y-auto">
-              {files.map((file, index) => (
+              {fileNames.map((name, index) => (
                 <div
-                  key={`${file.name}-${index}`}
+                  key={`${name}-${index}`}
                   className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
                 >
                   <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                     <FileText className="w-5 h-5 text-red-600" />
                   </div>
-
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(file.size)}
-                    </p>
+                    <p className="text-sm font-medium truncate">{name}</p>
                   </div>
-
                   <div className="flex items-center gap-2">
                     {uploaded && (
                       <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
@@ -190,21 +185,8 @@ export default function PDFInput() {
               ))}
             </div>
 
-            {uploading && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>
-                    Uploading {files.length} file{files.length > 1 ? "s" : ""}
-                    ...
-                  </span>
-                  <span>{uploadProgress}%</span>
-                </div>
-                <Progress value={uploadProgress} className="w-full" />
-              </div>
-            )}
-
             {!uploaded && !uploading && (
-              <Button onClick={simulateUpload} className="w-full">
+              <Button onClick={handleUpload} className="w-full">
                 <Upload className="w-4 h-4 mr-2" />
                 Upload {files.length} PDF{files.length > 1 ? "s" : ""}
               </Button>
@@ -226,4 +208,6 @@ export default function PDFInput() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export default PDFInput;

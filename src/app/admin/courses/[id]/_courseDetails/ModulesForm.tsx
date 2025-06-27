@@ -49,18 +49,13 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
       order: newOrder,
     });
 
-    // setModules((prev) => [
-    //   ...prev,
-    //   { title: title, _id: response.data?.module?._id, order: newOrder },
-    // ]);
-
     setTitle("");
     setIsCreating(false);
     router.refresh();
   };
 
   const handleEdit = (id: string) => {
-    router.push(`/dashboard/courses/${courseId}/modules/${id}`);
+    router.push(`/admin/courses/${courseId}/modules/${id}`);
   };
   console.log(modules);
   return (
