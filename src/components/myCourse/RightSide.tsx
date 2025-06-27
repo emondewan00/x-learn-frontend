@@ -49,7 +49,7 @@ const RightSide = () => {
     toggleModule,
     currentLesson,
     completedLessons,
-    setCurrentLesson,
+    handleClickLesson,
     isUnlocked,
     allLessons,
   } = useContext(CourseContext);
@@ -77,7 +77,7 @@ const RightSide = () => {
   };
 
   const onClickSearch = (lesson: Lesson) => {
-    setCurrentLesson(lesson);
+    handleClickLesson(lesson);
     if (lesson.moduleId !== openModule) {
       toggleModule(lesson.moduleId);
     }
@@ -198,7 +198,8 @@ const RightSide = () => {
                                 : "hover:bg-gray-50"
                             }`}
                             onClick={() =>
-                              isUnlocked(lesson._id) && setCurrentLesson(lesson)
+                              isUnlocked(lesson._id) &&
+                              handleClickLesson(lesson)
                             }
                           >
                             <div className="flex items-center space-x-2">

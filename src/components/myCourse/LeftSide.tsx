@@ -35,10 +35,15 @@ const LeftSide = () => {
 
   const onClickResource = (resource: string) => {
     const a = document.createElement("a");
-    a.href = resource_url + resource;
+    a.href = resource_url + "/resources/" + resource;
     a.download = resource;
+    a.target = "_blank";
     a.click();
   };
+
+  const videoURL =
+    currentLesson?.video ||
+    "https://www.youtube.com/embed/Yqs1O5NMJKw?si=k2PLMWnv9fXYQrLR";
 
   return (
     <div className="lg:col-span-2">
@@ -73,7 +78,7 @@ const LeftSide = () => {
             <iframe
               width="100%"
               height="100%"
-              src={`https://www.youtube.com/embed/${"dQw4w9WgXcQ"}`}
+              src={videoURL}
               title={currentLesson?.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -145,14 +150,14 @@ const LeftSide = () => {
         </CardContent>
 
         {currentLesson?.resources && currentLesson?.resources.length > 0 && (
-          <CardFooter>
+          <CardFooter className="flex flex-col  items-start">
             <h3 className="text-gray-900 font-semibold text-lg">Resources</h3>
             <ul className="list-disc list-inside">
               {currentLesson?.resources.map((resource) => (
                 <li
                   onClick={() => onClickResource(resource)}
                   key={resource}
-                  className="text-gray-700"
+                  className="text-gray-700 hover:text-blue-600 cursor-pointer"
                 >
                   {resource}
                 </li>

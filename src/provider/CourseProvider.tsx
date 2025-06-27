@@ -6,7 +6,7 @@ import Lesson from "@/types/lesson";
 
 export const CourseContext = React.createContext<{
   currentLesson: Lesson | null;
-  setCurrentLesson: React.Dispatch<React.SetStateAction<Lesson | null>>;
+  handleClickLesson: (lesson: Lesson) => void;
   modulesData: Module[];
   openModule: string;
   setOpenModule: React.Dispatch<React.SetStateAction<string>>;
@@ -25,7 +25,7 @@ export const CourseContext = React.createContext<{
   allLessons: Lesson[];
 }>({
   currentLesson: null,
-  setCurrentLesson: () => {},
+  handleClickLesson: () => {},
   modulesData: [],
   openModule: "",
   setOpenModule: () => {},
@@ -67,7 +67,7 @@ const CourseProvider = ({
         setCurrentLesson(response.data.activeLesson);
         setOpenModule(response.data.activeLesson.moduleId);
       } catch (error) {
-        console.error("Error fetching modules:", error);
+        console.log("Error fetching modules:", error);
       }
     };
 
@@ -75,6 +75,14 @@ const CourseProvider = ({
   }, [courseId]);
 
   const allLessons = modulesData.flatMap((module) => module.lessons);
+
+  const handleClickLesson = async (lesson: Lesson) => {
+    setCurrentLesson(lesson);
+    await axiosClient.patch(`/userCourses/active`, {
+      courseId,
+      lastVisitedLesson: lesson._id,
+    });
+  };
 
   const toggleModule = (moduleId: string) => {
     if (openModule === moduleId) {
@@ -150,7 +158,6 @@ const CourseProvider = ({
     }
   };
 
-
   const currentModule = modulesData.find((m) => m._id === openModule);
 
   const currentIndex =
@@ -171,7 +178,7 @@ const CourseProvider = ({
       value={{
         progress: getCourseProgress() || 0,
         currentLesson,
-        setCurrentLesson,
+        handleClickLesson,
         modulesData,
         openModule,
         setOpenModule,
