@@ -1,3 +1,4 @@
+"use client";
 import type * as React from "react";
 import { BarChart3, BookOpen, Plus, Radio, FileQuestion } from "lucide-react";
 
@@ -16,7 +17,7 @@ const navigationItems = [
   {
     title: "Analytics",
     icon: BarChart3,
-    url: "#",
+    url: "/admin",
     isActive: true,
   },
   {

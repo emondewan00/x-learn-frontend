@@ -1,8 +1,6 @@
 "use server";
-
 import { signIn } from "@/auth";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 type FormData = {
   email: string;
@@ -29,12 +27,10 @@ const loginAction = async (formData: FormData) => {
     const user = await response.json();
 
     await signIn("credentials", user?.user);
+
+    revalidatePath("/");
   } catch (error) {
-    if (isRedirectError(error)) {
-      redirect("/");
-    } else {
-      return error;
-    }
+    return error;
   }
 };
 

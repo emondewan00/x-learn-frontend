@@ -34,6 +34,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await loginAction(formData);
+    router.push("/");
   };
 
   return (
@@ -101,7 +102,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer"
             >
               Sign In
             </Button>

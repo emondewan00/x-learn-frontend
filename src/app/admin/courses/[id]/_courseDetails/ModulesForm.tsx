@@ -28,7 +28,7 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [title, setTitle] = useState("");
-  const [modules] = useState<Module[]>(initialData.modules || []);//we can use ref here 
+  const [modules] = useState<Module[]>(initialData.modules || []); //we can use ref here
 
   const toggleCreating = () => {
     setIsCreating((prev) => !prev);
@@ -57,7 +57,7 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
   const handleEdit = (id: string) => {
     router.push(`/admin/courses/${courseId}/modules/${id}`);
   };
-  console.log(modules);
+
   return (
     <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
