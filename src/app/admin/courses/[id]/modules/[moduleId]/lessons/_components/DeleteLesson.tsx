@@ -4,6 +4,7 @@ import { Trash } from "lucide-react";
 import React from "react";
 import { useRouter } from "next/navigation";
 import deleteLesson from "@/actions/deleteLesson";
+import { toast } from "sonner";
 
 type Props = {
   lessonId: string;
@@ -17,6 +18,7 @@ const DeleteLesson: React.FC<Props> = ({ lessonId }) => {
       <form
         action={async () => {
           await deleteLesson(lessonId);
+          toast.success("Lesson deleted successfully");
           router.back();
         }}
         className="ml-auto"

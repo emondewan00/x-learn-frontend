@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import axiosClient from "@/lib/axios";
+import UpdateSubmitButton from "./UpdateSubmitButton";
+import { toast } from "sonner";
 
 type Props = {
   initialData: { title: string };
@@ -35,11 +37,18 @@ export const TitleForm: React.FC<Props> = ({ initialData, courseId }) => {
     try {
       setIsSubmitting(true);
       await axiosClient.patch(`/courses/${courseId}`, { title });
+      toast.success("Title updated successfully", {
+        position: "top-right",
+        duration: 2000,
+      });
       setIsEditing(false);
       router.refresh();
     } catch (err) {
       console.error(err);
-      alert("Something went wrong");
+      toast.error("Something went wrong", {
+        position: "top-right",
+        duration: 2000,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -74,9 +83,7 @@ export const TitleForm: React.FC<Props> = ({ initialData, courseId }) => {
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="flex items-center gap-x-2">
-            <Button type="submit" disabled={isSubmitting || !title.trim()}>
-              Save
-            </Button>
+            <UpdateSubmitButton isDisabled={isSubmitting || !title.trim()} />
           </div>
         </form>
       )}

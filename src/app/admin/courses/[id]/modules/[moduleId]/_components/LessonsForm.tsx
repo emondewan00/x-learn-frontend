@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil, PlusCircle } from "lucide-react";
 import axiosClient from "@/lib/axios";
+import { toast } from "sonner";
+import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
 
 interface Lesson {
   _id: string;
@@ -51,6 +53,10 @@ export const LessonsForm: React.FC<LessonsFormProps> = ({
       courseId,
     });
 
+    toast.success("Lesson created successfully", {
+      position: "top-right",
+      duration: 2000,
+    });
     setTitle("");
     setIsCreating(false);
     router.refresh();
@@ -81,9 +87,7 @@ export const LessonsForm: React.FC<LessonsFormProps> = ({
             placeholder="Enter lesson title"
           />
           <div className="flex items-center gap-x-2">
-            <Button type="submit" disabled={!title.trim()}>
-              Save
-            </Button>
+            <UpdateSubmitButton isDisabled={!title.trim()} />
           </div>
         </form>
       )}

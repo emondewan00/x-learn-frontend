@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import axiosClient from "@/lib/axios";
+import { toast } from "sonner";
+import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
 
 interface ModuleTitleFormProps {
   initialData: {
@@ -34,11 +36,12 @@ export const ModuleTitleForm: React.FC<ModuleTitleFormProps> = ({
     try {
       setIsSubmitting(true);
       await axiosClient.patch(`/modules/${moduleId}`, { title });
-
+      toast.success("Title updated successfully");
       setIsEditing(false);
       router.refresh();
     } catch (err) {
       console.error("Failed to update title:", err);
+      toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
@@ -75,9 +78,10 @@ export const ModuleTitleForm: React.FC<ModuleTitleFormProps> = ({
             placeholder="Enter module title"
           />
           <div className="flex items-center gap-x-2">
-            <Button type="submit" disabled={isSubmitting || !title.trim()}>
-              {isSubmitting ? "Saving..." : "Save"}
-            </Button>
+            <UpdateSubmitButton
+              title={isSubmitting ? "Saving..." : "Save"}
+              isDisabled={isSubmitting || !title.trim()}
+            />
           </div>
         </form>
       )}

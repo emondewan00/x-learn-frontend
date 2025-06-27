@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ImageIcon, Pencil, PlusCircle, Upload, X } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import axiosClient from "@/lib/axios";
@@ -66,7 +67,10 @@ export const ImageForm: React.FC<ImageFormProps> = ({
 
   const handleSubmit = async () => {
     if (!thumbnailFile) {
-      console.log("Please select a file first.");
+      toast.info("Please select a file first.", {
+        position: "top-right",
+        duration: 2000,
+      });
       return;
     }
     const formData = new FormData();
@@ -80,10 +84,18 @@ export const ImageForm: React.FC<ImageFormProps> = ({
         },
       });
 
+      toast.success("Image updated successfully", {
+        position: "top-right",
+        duration: 2000,
+      });
       setIsEditing(false);
       router.refresh();
     } catch (error) {
       console.error("Image upload failed.", error);
+      toast.error("Something went wrong", {
+        position: "top-right",
+        duration: 2000,
+      });
     } finally {
       setIsSubmitting(false);
     }

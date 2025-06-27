@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import loginAction from "@/actions/loginAction";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import AuthSubmitButton from "@/components/AuthSubmitButton";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -100,12 +101,7 @@ const Login = () => {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer"
-            >
-              Sign In
-            </Button>
+            <AuthSubmitButton title="Sign In" />
           </form>
 
           <div className="mt-6 text-center">

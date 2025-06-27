@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Upload, X, Check } from "lucide-react";
 import axiosClient from "@/lib/axios";
+import { toast } from "sonner";
 
 type Props = {
   lessonId: string;
@@ -79,13 +80,14 @@ const PDFInput: React.FC<Props> = ({ lessonId, resources }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      toast.success("PDF uploaded successfully");
       setFiles([]);
       if (inputRef.current) inputRef.current.value = "";
 
       setUploaded(true);
     } catch (error) {
-      console.error("Upload failed", error);
+      console.log("Upload failed", error);
+      toast.error("Something went wrong");
     } finally {
       setUploading(false);
     }

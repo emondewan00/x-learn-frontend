@@ -5,6 +5,8 @@ import { Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axiosClient from "@/lib/axios";
+import UpdateSubmitButton from "./UpdateSubmitButton";
+import { toast } from "sonner";
 
 interface PriceFormProps {
   initialData: {
@@ -33,17 +35,28 @@ export const PriceForm: React.FC<PriceFormProps> = ({
     e.preventDefault();
 
     if (price <= 0) {
-      setError("Price must be greater than 0");
+      toast.error("Price must be greater than 0", {
+        position: "top-right",
+        duration: 2000,
+      });
       return;
     }
 
     try {
       setIsSubmitting(true);
       await axiosClient.patch(`/courses/${courseId}`, { price });
+      toast.success("Price updated successfully", {
+        position: "top-right",
+        duration: 2000,
+      });
       setIsEditing(false);
       router.refresh();
     } catch (err) {
-      console.error("Failed to update price:", err);
+      console.error(err);
+      toast.error("Something went wrong", {
+        position: "top-right",
+        duration: 2000,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -86,9 +99,10 @@ export const PriceForm: React.FC<PriceFormProps> = ({
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="flex items-center gap-x-2">
-            <Button type="submit" disabled={isSubmitting || price <= 0}>
-              {isSubmitting ? "Saving..." : "Save"}
-            </Button>
+            <UpdateSubmitButton
+              title="Save"
+              isDisabled={isSubmitting || price <= 0}
+            />
           </div>
         </form>
       )}

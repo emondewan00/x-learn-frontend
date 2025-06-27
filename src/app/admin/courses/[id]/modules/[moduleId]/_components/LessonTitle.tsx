@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import axiosClient from "@/lib/axios";
+import { toast } from "sonner";
+import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
 
 interface LessonTitleProps {
   initialData: {
@@ -32,10 +34,11 @@ export const LessonTitle: React.FC<LessonTitleProps> = ({
     try {
       setIsSubmitting(true);
       await axiosClient.patch(`/lessons/${lessonId}`, { title });
-
+      toast.success("Title updated successfully");
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to update title", error);
+      toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
@@ -73,9 +76,10 @@ export const LessonTitle: React.FC<LessonTitleProps> = ({
             placeholder="Enter lesson title"
           />
           <div className="flex items-center gap-x-2">
-            <Button type="submit" disabled={!title.trim() || isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
-            </Button>
+            <UpdateSubmitButton
+              title={isSubmitting ? "Saving..." : "Save"}
+              isDisabled={!title.trim()}
+            />
           </div>
         </form>
       )}

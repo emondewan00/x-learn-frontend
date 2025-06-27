@@ -14,6 +14,7 @@ import { BookOpen, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import AuthSubmitButton from "@/components/AuthSubmitButton";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -125,12 +126,7 @@ const Register = () => {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700"
-            >
-              Create Account
-            </Button>
+            <AuthSubmitButton title="Create Account" />
           </form>
 
           <div className="mt-6 text-center">

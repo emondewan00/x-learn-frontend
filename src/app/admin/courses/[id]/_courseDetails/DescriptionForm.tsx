@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import axiosClient from "@/lib/axios";
+import { toast } from "sonner";
+import UpdateSubmitButton from "./UpdateSubmitButton";
 
 type Props = {
   initialData: { description: string };
@@ -29,6 +31,7 @@ export const DescriptionForm: React.FC<Props> = ({ initialData, courseId }) => {
 
     if (!description.trim()) {
       setError("Description is required");
+      toast.error("Description is required");
       return;
     }
 
@@ -36,11 +39,13 @@ export const DescriptionForm: React.FC<Props> = ({ initialData, courseId }) => {
       setIsSubmitting(true);
 
       await axiosClient.patch(`/courses/${courseId}`, { description });
+
+      toast.success("Description updated successfully");
       setIsEditing(false);
       router.refresh();
     } catch (err) {
       console.error(err);
-      alert("Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
@@ -80,12 +85,10 @@ export const DescriptionForm: React.FC<Props> = ({ initialData, courseId }) => {
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="flex items-center gap-x-2">
-            <Button
-              type="submit"
-              disabled={isSubmitting || !description.trim()}
-            >
-              Save
-            </Button>
+            <UpdateSubmitButton
+              title="Save"
+              isDisabled={isSubmitting || !description.trim()}
+            />
           </div>
         </form>
       )}

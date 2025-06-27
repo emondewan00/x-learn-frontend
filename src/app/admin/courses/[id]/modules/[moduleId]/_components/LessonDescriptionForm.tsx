@@ -4,6 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import axiosClient from "@/lib/axios";
+import { toast } from "sonner";
+import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
 
 interface LessonDescriptionFormProps {
   initialData: {
@@ -34,9 +36,11 @@ export const LessonDescriptionForm: React.FC<LessonDescriptionFormProps> = ({
 
       await axiosClient.patch(`/lessons/${lessonId}`, { description });
 
+      toast.success("Description updated successfully");
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to update description", error);
+      toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
@@ -75,12 +79,10 @@ export const LessonDescriptionForm: React.FC<LessonDescriptionFormProps> = ({
           />
 
           <div className="flex items-center gap-x-2">
-            <Button
-              type="submit"
-              disabled={isSubmitting || !description.trim()}
-            >
-              {isSubmitting ? "Saving..." : "Save"}
-            </Button>
+            <UpdateSubmitButton
+              title={isSubmitting ? "Saving..." : "Save"}
+              isDisabled={isSubmitting || !description.trim()}
+            />
           </div>
         </form>
       )}

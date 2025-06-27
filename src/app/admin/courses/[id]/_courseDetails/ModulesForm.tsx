@@ -1,12 +1,12 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PlusCircle, Pencil } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axiosClient from "@/lib/axios";
+import { toast } from "sonner";
+import UpdateSubmitButton from "./UpdateSubmitButton";
 
 interface Module {
   _id: string;
@@ -49,6 +49,10 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
       order: newOrder,
     });
 
+    toast.success("Module created successfully", {
+      position: "top-right",
+      duration: 2000,
+    });
     setTitle("");
     setIsCreating(false);
     router.refresh();
@@ -82,9 +86,8 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <Button type="submit" disabled={!title.trim()}>
-            Create
-          </Button>
+
+          <UpdateSubmitButton title="Create" isDisabled={!title.trim()} />
         </form>
       )}
 

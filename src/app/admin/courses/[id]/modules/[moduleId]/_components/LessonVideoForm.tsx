@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import axiosClient from "@/lib/axios";
 import { Pencil } from "lucide-react";
 import { useState, FormEvent } from "react";
+import { toast } from "sonner";
+import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
 
 type VideoUrlFormProps = {
   initialData: { videoUrl?: string };
@@ -23,6 +25,8 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
     e.preventDefault();
 
     await axiosClient.patch(`/lessons/${lessonId}`, { video: videoUrl });
+
+    toast.success("Video URL updated successfully");
 
     setIsEditing(false);
   };
@@ -72,7 +76,7 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
             placeholder="Enter embed video URL"
           />
           <div className="flex items-center gap-x-2">
-            <Button type="submit">Save</Button>
+          <UpdateSubmitButton title="Save" />
           </div>
         </form>
       )}

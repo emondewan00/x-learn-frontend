@@ -2,7 +2,7 @@
 import type React from "react";
 import { useState } from "react";
 import Image from "next/image";
-import { Upload, X } from "lucide-react";
+import { Loader2Icon, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import axiosClient from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
 
 export default function CourseUploadForm() {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
@@ -164,12 +165,20 @@ export default function CourseUploadForm() {
               />
             </div>
 
-            <Button type="submit" className="w-full ">
-              Upload Course
-            </Button>
+            <SubmitButton />
           </form>
         </CardContent>
       </Card>
     </div>
   );
 }
+
+const SubmitButton = () => {
+  const status = useFormStatus();
+
+  return (
+    <Button disabled={status.pending} type="submit" className="w-full ">
+      {status.pending && <Loader2Icon className="animate-spin" />} Upload Course
+    </Button>
+  );
+};
