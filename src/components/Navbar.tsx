@@ -74,7 +74,9 @@ export function Navbar() {
                     </Link>
                   ) : (
                     <>
-                      <DropdownMenuItem>My Courses</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href={"/my-courses"}>My Courses</Link>
+                      </DropdownMenuItem>
                       <DropdownMenuItem>Profile</DropdownMenuItem>
                     </>
                   )}
