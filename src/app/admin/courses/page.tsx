@@ -52,7 +52,7 @@ const AdminCoursePage = async () => {
 
           <CardHeader className="pb-2">
             <CardTitle className="text-lg line-clamp-2 group-hover:text-blue-600 transition-colors">
-              <Link href={`/admin/courses/${course.id}`}>{course.title}</Link>
+              <Link href={`/admin/courses/${course._id}`}>{course.title}</Link>
             </CardTitle>
           </CardHeader>
 

@@ -17,7 +17,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
       <AppSidebar />
       <SidebarInset>
         <TopNavbar />
-        <div className="pt-8 pl-8">{children}</div>
+        <div className="p-8">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

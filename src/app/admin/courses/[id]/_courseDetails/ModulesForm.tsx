@@ -1,67 +1,126 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Eye, Pencil } from "lucide-react";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { PlusCircle, Pencil } from "lucide-react";
 
-const initialModules = [
-  { id: 1, title: "test" },
-  { id: 2, title: "hello 2" },
-];
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import axiosClient from "@/lib/axios";
 
-export const ModulesForm = ({ initialData = {}, courseId }) => {
+interface Module {
+  _id: string;
+  title: string;
+  order: number;
+}
+
+interface ModulesFormProps {
+  initialData: {
+    modules?: Module[];
+  };
+  courseId: string;
+}
+
+export const ModulesForm: React.FC<ModulesFormProps> = ({
+  initialData,
+  courseId,
+}) => {
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [title, setTitle] = useState("");
+  const [modules] = useState<Module[]>(initialData.modules || []);//we can use ref here 
 
-  const toggleEdit = () => setIsEditing((current) => !current);
+  const toggleCreating = () => {
+    setIsCreating((prev) => !prev);
+    setTitle("");
+  };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!title.trim()) return;
+
+    const maxOrder = modules.reduce((max, mod) => Math.max(max, mod.order), 0);
+    const newOrder = maxOrder + 1;
+
+    await axiosClient.post(`/modules`, {
+      title,
+      courseId,
+      order: newOrder,
+    });
+
+    // setModules((prev) => [
+    //   ...prev,
+    //   { title: title, _id: response.data?.module?._id, order: newOrder },
+    // ]);
+
+    setTitle("");
+    setIsCreating(false);
+    router.refresh();
+  };
+
+  const handleEdit = (id: string) => {
+    router.push(`/dashboard/courses/${courseId}/modules/${id}`);
+  };
+  console.log(modules);
   return (
-    <div className="mt-6 border bg-gray-50 rounded-md p-4">
+    <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Course Modules
-        <Button variant="ghost" onClick={toggleEdit}>
-          {isEditing ? (
+        <Button variant="ghost" onClick={toggleCreating}>
+          {isCreating ? (
             <>Cancel</>
           ) : (
             <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Add Module
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Add a module
             </>
           )}
         </Button>
       </div>
-      {!isEditing && (
-        <div className="space-y-4 mt-4">
-          {initialModules.map((module) => (
-            <div
-              key={module.id}
-              className="border rounded p-4 flex items-center justify-between bg-gray-100"
-            >
-              <p className="text-base">{module.title}</p>
 
-              <Button variant="ghost">
-                <Link href={`/admin/courses/${courseId}/modules/${module.id}`}>
-                  <Pencil className="h-4 w-4 mr-2" />
-                </Link>
-              </Button>
-            </div>
-          ))}
-        </div>
-      )}
-      {isEditing && (
-        <form className="space-y-4 mt-4">
+      {isCreating && (
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <Input
-            name="title"
-            value={"test"}
-            onChange={(e) => console.log(e.target.value)}
+            type="text"
+            placeholder="e.g. 'Introduction to the course...'"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
-
-          <div className="flex items-center gap-x-2">
-            <Button type="submit">Save</Button>
-          </div>
+          <Button type="submit" disabled={!title.trim()}>
+            Create
+          </Button>
         </form>
+      )}
+
+      {!isCreating && (
+        <div
+          className={`text-sm mt-2 ${
+            !modules.length ? "text-slate-500 italic" : ""
+          }`}
+        >
+          {!modules.length && "No modules"}
+          {modules.length > 0 && (
+            <ul className="space-y-2 mt-2">
+              {modules.map((mod) => (
+                <li
+                  key={mod._id}
+                  className="flex items-center justify-between bg-white border rounded-md px-3 py-2"
+                >
+                  <span>{mod.title}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleEdit(mod._id)}
+                  >
+                    <Pencil className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </div>
   );
