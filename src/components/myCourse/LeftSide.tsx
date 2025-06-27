@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Card,
   CardContent,
@@ -7,25 +7,39 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { BookOpen, Clock, Play, SkipBack, SkipForward } from "lucide-react";
+import {
+  BookOpen,
+  Check,
+  Clock,
+  Play,
+  SkipBack,
+  SkipForward,
+} from "lucide-react";
 import { Button } from "../ui/button";
-import { Lesson } from "@/app/my-courses/[id]/page";
+import { CourseContext } from "@/provider/CourseProvider";
 
-type Props = {
-  currentLesson: Lesson;
-  nextHandler: () => void;
-  prevHandler: () => void;
-  lessonOutOfLessons: string;
-  moduleTitle: string;
-};
+const resource_url = process.env.NEXT_PUBLIC_RESOURCE_URL;
 
-const LeftSide: React.FC<Props> = ({
-  currentLesson,
-  nextHandler,
-  prevHandler,
-  lessonOutOfLessons,
-  moduleTitle,
-}) => {
+const LeftSide = () => {
+  const {
+    currentLesson,
+    moduleTitle,
+    lessonOutOfLessons,
+    nextHandler,
+    prevHandler,
+    lastLessonId,
+    firstLessonId,
+    completeCourseHandler,
+    completedLessons,
+  } = useContext(CourseContext);
+
+  const onClickResource = (resource: string) => {
+    const a = document.createElement("a");
+    a.href = resource_url + resource;
+    a.download = resource;
+    a.click();
+  };
+
   return (
     <div className="lg:col-span-2">
       {/* Course Title */}
@@ -81,20 +95,37 @@ const LeftSide: React.FC<Props> = ({
                   size="sm"
                   onClick={prevHandler}
                   className="cursor-pointer"
-                  // disabled={currentLesson?._id === 1}
+                  disabled={currentLesson?._id === firstLessonId}
                 >
                   <SkipBack className="w-4 h-4 mr-1" />
                   Previous
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={nextHandler}
-                  className="cursor-pointer"
-                >
-                  Next
-                  <SkipForward className="w-4 h-4 ml-1" />
-                </Button>
+
+                {currentLesson?._id === lastLessonId ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={completeCourseHandler}
+                    className="cursor-pointer text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+                    disabled={completedLessons.has(
+                      currentLesson?._id as string
+                    )}
+                  >
+                    Complete
+                    <Check className="w-4 h-4 ml-1" />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={nextHandler}
+                    className="cursor-pointer"
+                    disabled={currentLesson?._id === lastLessonId}
+                  >
+                    Next
+                    <SkipForward className="w-4 h-4 ml-1" />
+                  </Button>
+                )}
               </div>
               <div className="text-sm text-gray-600">{lessonOutOfLessons}</div>
             </div>
@@ -112,6 +143,23 @@ const LeftSide: React.FC<Props> = ({
             {currentLesson?.description}
           </p>
         </CardContent>
+
+        {currentLesson?.resources && currentLesson?.resources.length > 0 && (
+          <CardFooter>
+            <h3 className="text-gray-900 font-semibold text-lg">Resources</h3>
+            <ul className="list-disc list-inside">
+              {currentLesson?.resources.map((resource) => (
+                <li
+                  onClick={() => onClickResource(resource)}
+                  key={resource}
+                  className="text-gray-700"
+                >
+                  {resource}
+                </li>
+              ))}
+            </ul>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );
