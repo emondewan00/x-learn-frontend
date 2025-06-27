@@ -3,6 +3,7 @@ import axiosClient from "@/lib/axios";
 import React, { useEffect, useState } from "react";
 import Module from "@/types/module";
 import Lesson from "@/types/lesson";
+import { useRouter } from "next/navigation";
 
 export const CourseContext = React.createContext<{
   currentLesson: Lesson | null;
@@ -51,12 +52,25 @@ const CourseProvider = ({
   children: React.ReactNode;
   courseId: string;
 }) => {
+  const router = useRouter();
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [modulesData, setModulesData] = useState<Module[]>([]);
   const [openModule, setOpenModule] = useState<string>("");
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(
     new Set()
   );
+
+  useEffect(() => {
+    const checkAlreadyEnrolled = async () => {
+      const response = await axiosClient.get(`/userCourses/course/${courseId}`);
+      if (response.status === 200 && !response.data?.isEnrolled) {
+        alert("You are not enrolled in this course");
+        router.push("/");
+      }
+    };
+
+    checkAlreadyEnrolled();
+  }, [courseId, router]);
 
   useEffect(() => {
     const fetchModules = async () => {

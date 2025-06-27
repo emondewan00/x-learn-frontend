@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -8,13 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Star, Users } from "lucide-react";
+import { Loader2Icon, Star, Users } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import Course from "@/types/course";
 import { useSession } from "next-auth/react";
 import axiosClient from "@/lib/axios";
-
 
 const resource_url = process.env.NEXT_PUBLIC_RESOURCE_URL + "/thumbnails/";
 
@@ -24,9 +23,11 @@ type Props = {
 
 const CourseCard: React.FC<Props> = ({ course }) => {
   const { data: session } = useSession();
+  const [leading, setLeading] = useState<boolean>(false);
 
   const handleEnroll = async () => {
     if (!session?.user) return;
+    setLeading(true);
     const checkAlreadyEnrolled = await axiosClient.get(
       `/userCourses/course/${course._id}`
     );
@@ -36,6 +37,7 @@ const CourseCard: React.FC<Props> = ({ course }) => {
       checkAlreadyEnrolled.data?.isEnrolled
     ) {
       alert("You are already enrolled in this course");
+      setLeading(false);
       return;
     } else {
       const response = await axiosClient.post(`/userCourses/`, {
@@ -47,6 +49,8 @@ const CourseCard: React.FC<Props> = ({ course }) => {
         alert("You have successfully enrolled in the course");
       }
     }
+
+    setLeading(false);
   };
 
   return (
@@ -90,11 +94,12 @@ const CourseCard: React.FC<Props> = ({ course }) => {
             {course.price}
           </span>
           <Button
+            disabled={leading}
             onClick={handleEnroll}
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
           >
-            Enroll Now
+            {leading && <Loader2Icon className="animate-spin" />} Enroll Now
           </Button>
         </div>
       </CardContent>

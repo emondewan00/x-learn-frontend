@@ -41,9 +41,11 @@ const LeftSide = () => {
     a.click();
   };
 
-  const videoURL =
-    currentLesson?.video ||
-    "https://www.youtube.com/embed/Yqs1O5NMJKw?si=k2PLMWnv9fXYQrLR";
+  const isValidUrl =
+    currentLesson?.video && currentLesson.video.startsWith("http");
+  const finalUrl = isValidUrl
+    ? currentLesson?.video
+    : "https://www.youtube.com/embed/Yqs1O5NMJKw";
 
   return (
     <div className="lg:col-span-2">
@@ -78,7 +80,7 @@ const LeftSide = () => {
             <iframe
               width="100%"
               height="100%"
-              src={videoURL}
+              src={finalUrl}
               title={currentLesson?.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen

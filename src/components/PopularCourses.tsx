@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import Course from "@/types/course";
 import CourseCard from "./CourseCard";
+import Link from "next/link";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -35,14 +36,16 @@ export async function PopularCourses() {
         </div>
 
         <div className="text-center">
-          <Button
-            variant="outline"
-            size="lg"
-            className="border-blue-600 text-blue-600 hover:bg-blue-50"
-          >
-            <BookOpen className="w-5 h-5 mr-2" />
-            View All Courses
-          </Button>
+          <Link href="/courses">
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+            >
+              <BookOpen className="w-5 h-5 mr-2" />
+              View All Courses
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
