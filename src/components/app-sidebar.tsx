@@ -1,6 +1,13 @@
 "use client";
 import type * as React from "react";
-import { BarChart3, BookOpen, Plus, Radio, FileQuestion } from "lucide-react";
+import {
+  BarChart3,
+  BookOpen,
+  Plus,
+  Radio,
+  FileQuestion,
+  BookText,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -29,6 +36,11 @@ const navigationItems = [
     title: "Add Course",
     icon: Plus,
     url: "/admin/courses/new",
+  },
+  {
+    title: "Lessons",
+    icon: BookText,
+    url: "/admin/lessons",
   },
   {
     title: "Lives",
