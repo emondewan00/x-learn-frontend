@@ -15,6 +15,9 @@ export async function PopularCourses() {
 
   const data = await response.json();
 
+  if (!data?.success)
+    return <div>{data.message || "Something went wrong"}</div>;
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
