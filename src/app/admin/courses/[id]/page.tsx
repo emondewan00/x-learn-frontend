@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 const resource_url = process.env.NEXT_PUBLIC_RESOURCE_URL + "/thumbnails/";
+const cookie_name = process.env.COOKIE_NAME || "authjs.session-token";
 
 const AdminCourseDetails = async ({
   params,
@@ -17,7 +18,7 @@ const AdminCourseDetails = async ({
   const courseId = (await params).id;
 
   const cookieStore = await cookies();
-  const token = cookieStore.get("authjs.session-token")?.value;
+  const token = cookieStore.get(cookie_name)?.value;
 
   const response = await fetch(`${base_url}/courses/${courseId}`, {
     headers: {

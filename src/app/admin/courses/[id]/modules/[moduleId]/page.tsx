@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import DeleteModule from "./_components/DeleteModule";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
+const cookie_name = process.env.COOKIE_NAME || "authjs.session-token";
 
 const Module = async ({
   params,
@@ -13,7 +14,7 @@ const Module = async ({
 }) => {
   const { moduleId, id } = await params;
   const cookieStore = await cookies();
-  const token = cookieStore.get("authjs.session-token")?.value;
+  const token = cookieStore.get(cookie_name)?.value;
 
   const response = await fetch(`${base_url}/modules/${moduleId}`, {
     headers: {

@@ -7,6 +7,7 @@ import PDFInput from "../../_components/PDFInput";
 import DeleteLesson from "../_components/DeleteLesson";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
+const cookie_name = process.env.COOKIE_NAME || "authjs.session-token";
 
 const Lesson = async ({
   params,
@@ -15,7 +16,7 @@ const Lesson = async ({
 }) => {
   const { lessonId } = await params;
   const cookieStore = await cookies();
-  const token = cookieStore.get("authjs.session-token")?.value;
+  const token = cookieStore.get(cookie_name)?.value;
 
   const response = await fetch(`${base_url}/lessons/${lessonId}`, {
     headers: {
