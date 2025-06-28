@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Module from "@/types/module";
 import Lesson from "@/types/lesson";
 import { useRouter } from "next/navigation";
+import getToken from "@/lib/getToken";
 
 export const CourseContext = React.createContext<{
   currentLesson: Lesson | null;
@@ -62,7 +63,15 @@ const CourseProvider = ({
 
   useEffect(() => {
     const checkAlreadyEnrolled = async () => {
-      const response = await axiosClient.get(`/userCourses/course/${courseId}`);
+      const token = await getToken();
+      const response = await axiosClient.get(
+        `/userCourses/course/${courseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.status === 200 && !response.data?.isEnrolled) {
         alert("You are not enrolled in this course");
         router.push("/");
@@ -75,7 +84,12 @@ const CourseProvider = ({
   useEffect(() => {
     const fetchModules = async () => {
       try {
-        const response = await axiosClient.get(`/modules/course/${courseId}`);
+        const token = await getToken();
+        const response = await axiosClient.get(`/modules/course/${courseId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setModulesData(response.data.data);
         setCompletedLessons(new Set(response.data.completedLessons));
         setCurrentLesson(response.data.activeLesson);
@@ -92,10 +106,19 @@ const CourseProvider = ({
 
   const handleClickLesson = async (lesson: Lesson) => {
     setCurrentLesson(lesson);
-    await axiosClient.patch(`/userCourses/active`, {
-      courseId,
-      lastVisitedLesson: lesson._id,
-    });
+    const token = await getToken();
+    await axiosClient.patch(
+      `/userCourses/active`,
+      {
+        courseId,
+        lastVisitedLesson: lesson._id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   };
 
   const toggleModule = (moduleId: string) => {
@@ -119,12 +142,20 @@ const CourseProvider = ({
         setCompletedLessons(
           (prev) => new Set([...prev, currentLesson?._id as string])
         );
-
-        await axiosClient.patch(`/userCourses`, {
-          courseId,
-          lessonId: currentLesson?._id,
-          lastVisitedLesson: newCurrentLesson._id,
-        });
+        const token = await getToken();
+        await axiosClient.patch(
+          `/userCourses`,
+          {
+            courseId,
+            lessonId: currentLesson?._id,
+            lastVisitedLesson: newCurrentLesson._id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
       if (openModule !== newCurrentLesson.moduleId) {
         toggleModule(newCurrentLesson.moduleId);
@@ -163,12 +194,21 @@ const CourseProvider = ({
       setCompletedLessons(
         (prev) => new Set([...prev, currentLesson?._id as string])
       );
+      const token = await getToken();
       // add a toast
-      await axiosClient.patch(`/userCourses`, {
-        courseId,
-        lessonId: currentLesson?._id,
-        lastVisitedLesson: currentLesson?._id,
-      });
+      await axiosClient.patch(
+        `/userCourses`,
+        {
+          courseId,
+          lessonId: currentLesson?._id,
+          lastVisitedLesson: currentLesson?._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
     }
   };
 

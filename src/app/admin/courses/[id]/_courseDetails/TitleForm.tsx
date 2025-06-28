@@ -7,6 +7,7 @@ import { Pencil } from "lucide-react";
 import axiosClient from "@/lib/axios";
 import UpdateSubmitButton from "./UpdateSubmitButton";
 import { toast } from "sonner";
+import getToken from "@/lib/getToken";
 
 type Props = {
   initialData: { title: string };
@@ -36,7 +37,16 @@ export const TitleForm: React.FC<Props> = ({ initialData, courseId }) => {
 
     try {
       setIsSubmitting(true);
-      await axiosClient.patch(`/courses/${courseId}`, { title });
+      const token = await getToken();
+      await axiosClient.patch(
+        `/courses/${courseId}`,
+        { title },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       toast.success("Title updated successfully", {
         position: "top-right",
         duration: 2000,

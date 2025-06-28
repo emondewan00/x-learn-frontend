@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import axiosClient from "@/lib/axios";
 import UpdateSubmitButton from "./UpdateSubmitButton";
 import { toast } from "sonner";
+import getToken from "@/lib/getToken";
 
 interface PriceFormProps {
   initialData: {
@@ -44,7 +45,16 @@ export const PriceForm: React.FC<PriceFormProps> = ({
 
     try {
       setIsSubmitting(true);
-      await axiosClient.patch(`/courses/${courseId}`, { price });
+      const token = await getToken();
+      await axiosClient.patch(
+        `/courses/${courseId}`,
+        { price },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       toast.success("Price updated successfully", {
         position: "top-right",
         duration: 2000,

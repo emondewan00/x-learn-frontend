@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Upload, X, Check } from "lucide-react";
 import axiosClient from "@/lib/axios";
 import { toast } from "sonner";
+import getToken from "@/lib/getToken";
 
 type Props = {
   lessonId: string;
@@ -75,9 +76,11 @@ const PDFInput: React.FC<Props> = ({ lessonId, resources }) => {
     });
 
     try {
+      const token = await getToken();
       await axiosClient.patch(`/lessons/pdf/${lessonId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
       toast.success("PDF uploaded successfully");

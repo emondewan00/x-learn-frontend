@@ -6,6 +6,7 @@ import { Pencil } from "lucide-react";
 import axiosClient from "@/lib/axios";
 import { toast } from "sonner";
 import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
+import getToken from "@/lib/getToken";
 
 interface LessonTitleProps {
   initialData: {
@@ -33,7 +34,16 @@ export const LessonTitle: React.FC<LessonTitleProps> = ({
 
     try {
       setIsSubmitting(true);
-      await axiosClient.patch(`/lessons/${lessonId}`, { title });
+      const token = await getToken();
+      await axiosClient.patch(
+        `/lessons/${lessonId}`,
+        { title },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       toast.success("Title updated successfully");
       setIsEditing(false);
     } catch (error) {

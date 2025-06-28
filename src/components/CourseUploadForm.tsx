@@ -12,6 +12,7 @@ import axiosClient from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
+import getToken from "@/lib/getToken";
 
 export default function CourseUploadForm() {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
@@ -50,10 +51,11 @@ export default function CourseUploadForm() {
       formData.append("title", title);
       formData.append("price", price);
       formData.append("description", description);
-
+      const token = await getToken();
       const response = await axiosClient.post("/courses", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
       toast.success("Course uploaded successfully");

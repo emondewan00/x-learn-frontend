@@ -8,6 +8,7 @@ import { Pencil, PlusCircle } from "lucide-react";
 import axiosClient from "@/lib/axios";
 import { toast } from "sonner";
 import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
+import getToken from "@/lib/getToken";
 
 interface Lesson {
   _id: string;
@@ -45,13 +46,21 @@ export const LessonsForm: React.FC<LessonsFormProps> = ({
 
     const maxOrder = lessons.reduce((max, mod) => Math.max(max, mod.order), 0);
     const newOrder = maxOrder + 1;
-
-    await axiosClient.post(`/lessons`, {
-      title,
-      moduleId,
-      order: newOrder,
-      courseId,
-    });
+    const token = await getToken();
+    await axiosClient.post(
+      `/lessons`,
+      {
+        title,
+        moduleId,
+        order: newOrder,
+        courseId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     toast.success("Lesson created successfully", {
       position: "top-right",

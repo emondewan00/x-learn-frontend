@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import axiosClient from "@/lib/axios";
 import { toast } from "sonner";
 import UpdateSubmitButton from "./UpdateSubmitButton";
+import getToken from "@/lib/getToken";
 
 interface Module {
   _id: string;
@@ -42,12 +43,20 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
 
     const maxOrder = modules.reduce((max, mod) => Math.max(max, mod.order), 0);
     const newOrder = maxOrder + 1;
-
-    await axiosClient.post(`/modules`, {
-      title,
-      courseId,
-      order: newOrder,
-    });
+    const token = await getToken();
+    await axiosClient.post(
+      `/modules`,
+      {
+        title,
+        courseId,
+        order: newOrder,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     toast.success("Module created successfully", {
       position: "top-right",

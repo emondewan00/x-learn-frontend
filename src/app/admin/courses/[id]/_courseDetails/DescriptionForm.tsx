@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axiosClient from "@/lib/axios";
 import { toast } from "sonner";
 import UpdateSubmitButton from "./UpdateSubmitButton";
+import getToken from "@/lib/getToken";
 
 type Props = {
   initialData: { description: string };
@@ -37,8 +38,16 @@ export const DescriptionForm: React.FC<Props> = ({ initialData, courseId }) => {
 
     try {
       setIsSubmitting(true);
-
-      await axiosClient.patch(`/courses/${courseId}`, { description });
+      const token = await getToken();
+      await axiosClient.patch(
+        `/courses/${courseId}`,
+        { description },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       toast.success("Description updated successfully");
       setIsEditing(false);

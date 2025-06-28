@@ -15,6 +15,7 @@ import Image from "next/image";
 import Course from "@/types/course";
 import { useSession } from "next-auth/react";
 import axiosClient from "@/lib/axios";
+import getToken from "@/lib/getToken";
 
 const resource_url = process.env.NEXT_PUBLIC_RESOURCE_URL + "/thumbnails/";
 
@@ -30,8 +31,14 @@ const CourseCard: React.FC<Props> = ({ course }) => {
   const handleEnroll = async () => {
     if (!session?.user) return;
     setLeading(true);
+    const token = await getToken();
     const checkAlreadyEnrolled = await axiosClient.get(
-      `/userCourses/course/${course._id}`
+      `/userCourses/course/${course._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     if (
@@ -42,10 +49,19 @@ const CourseCard: React.FC<Props> = ({ course }) => {
       setLeading(false);
       return;
     } else {
-      const response = await axiosClient.post(`/userCourses/`, {
-        courseId: course._id,
-        userId: session.user.id,
-      });
+      const token = await getToken();
+      const response = await axiosClient.post(
+        `/userCourses/`,
+        {
+          courseId: course._id,
+          userId: session.user.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status === 201) {
         alert("You have successfully enrolled in the course");

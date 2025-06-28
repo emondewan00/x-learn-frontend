@@ -6,6 +6,7 @@ import { Pencil } from "lucide-react";
 import { useState, FormEvent } from "react";
 import { toast } from "sonner";
 import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
+import getToken from "@/lib/getToken";
 
 type VideoUrlFormProps = {
   initialData: { videoUrl?: string };
@@ -23,8 +24,16 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    await axiosClient.patch(`/lessons/${lessonId}`, { video: videoUrl });
+    const token = await getToken();
+    await axiosClient.patch(
+      `/lessons/${lessonId}`,
+      { video: videoUrl },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     toast.success("Video URL updated successfully");
 
@@ -76,7 +85,7 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
             placeholder="Enter embed video URL"
           />
           <div className="flex items-center gap-x-2">
-          <UpdateSubmitButton title="Save" />
+            <UpdateSubmitButton title="Save" />
           </div>
         </form>
       )}

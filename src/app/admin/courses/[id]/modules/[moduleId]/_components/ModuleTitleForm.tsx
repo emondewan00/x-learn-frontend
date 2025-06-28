@@ -8,6 +8,7 @@ import { Pencil } from "lucide-react";
 import axiosClient from "@/lib/axios";
 import { toast } from "sonner";
 import UpdateSubmitButton from "../../../_courseDetails/UpdateSubmitButton";
+import getToken from "@/lib/getToken";
 
 interface ModuleTitleFormProps {
   initialData: {
@@ -35,7 +36,16 @@ export const ModuleTitleForm: React.FC<ModuleTitleFormProps> = ({
     if (!title.trim()) return;
     try {
       setIsSubmitting(true);
-      await axiosClient.patch(`/modules/${moduleId}`, { title });
+      const token = await getToken();
+      await axiosClient.patch(
+        `/modules/${moduleId}`,
+        { title },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       toast.success("Title updated successfully");
       setIsEditing(false);
       router.refresh();

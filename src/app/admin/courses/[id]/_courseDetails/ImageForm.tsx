@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import axiosClient from "@/lib/axios";
+import getToken from "@/lib/getToken";
 
 interface ImageFormProps {
   initialData: {
@@ -78,9 +79,11 @@ export const ImageForm: React.FC<ImageFormProps> = ({
 
     try {
       setIsSubmitting(true);
+      const token = await getToken();
       await axiosClient.patch(`/courses/image/${courseId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
 

@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import SearchAndFilter from "./_components/SearchAndFilter";
 import LessonsTable from "./_components/LessonsTable";
+import getToken from "@/lib/getToken";
 
 interface Lessons {
   _id: string;
@@ -53,7 +54,12 @@ export default function LessonsManagement() {
 
   useEffect(() => {
     const getData = async () => {
-      const res = await axiosClient.get(`/lessons?${searchParams.toString()}`);
+      const token = await getToken();
+      const res = await axiosClient.get(`/lessons?${searchParams.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (res.status === 200) {
         setData({
@@ -97,7 +103,12 @@ export default function LessonsManagement() {
 
   const handleDeleteLesson = async (lessonId: string) => {
     try {
-      const res = await axiosClient.delete(`/lessons/${lessonId}`);
+      const token = await getToken();
+      const res = await axiosClient.delete(`/lessons/${lessonId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (res.status === 200) {
         toast.success("Lesson deleted successfully");
         const filteredLectures = data.data.filter(
