@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+import { unstable_noStore as noStore } from "next/cache";
 import CourseCard from "@/components/CourseCard";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
@@ -8,6 +8,7 @@ import Course from "@/types/course";
 import React, { useEffect, useState } from "react";
 
 const Courses = () => {
+  noStore();
   const [courses, setCourses] = useState<Course[]>([]);
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 "use client";
-export const dynamic = "force-dynamic";
+import { unstable_noStore as noStore } from "next/cache";
+
 import React, { useState } from "react";
 import {
   Card,
@@ -22,6 +23,7 @@ type Props = {
 };
 
 const CourseCard: React.FC<Props> = ({ course }) => {
+  noStore();
   const { data: session } = useSession();
   const [leading, setLeading] = useState<boolean>(false);
 

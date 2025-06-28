@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+import { unstable_noStore as noStore } from "next/cache";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import axiosClient from "@/lib/axios";
 
 const Register = () => {
+  noStore();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",

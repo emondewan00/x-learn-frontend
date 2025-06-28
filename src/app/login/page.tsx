@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+import { unstable_noStore as noStore } from 'next/cache';
 import { useState } from "react";
 import {
   Card,
@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import AuthSubmitButton from "@/components/AuthSubmitButton";
 
 const Login = () => {
+  noStore();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
