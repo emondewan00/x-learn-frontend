@@ -16,6 +16,22 @@ import { revalidatePath } from "next/cache";
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 const resource_url = process.env.NEXT_PUBLIC_RESOURCE_URL + "/thumbnails/";
 
+export interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  image: string;
+  published: boolean;
+  modules: string[];
+  enrolledCount: number;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  modulesCount: number;
+  lessonsCount: number;
+}
+
 const AdminCoursePage = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authjs.session-token")?.value;
@@ -25,7 +41,10 @@ const AdminCoursePage = async () => {
       Authorization: `Bearer ${token}`,
     },
   });
-  const courses = await response.json();
+
+  if (!response.ok) revalidatePath("/admin/courses");
+
+  const courses: { data: Course[] } = await response.json();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pr-8">
