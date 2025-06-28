@@ -21,7 +21,7 @@ const loginAction = async (formData: FormData) => {
     });
 
     if (response.ok == false) {
-      return await response.json();
+      return { error: "Invalid credentials" };
     }
 
     const user = await response.json();
