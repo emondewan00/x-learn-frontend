@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import DeleteModule from "./_components/DeleteModule";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
-const cookie_name = process.env.COOKIE_NAME || "authjs.session-token";
+const cookie_name = process.env.COOKIE_NAME || "session-token";
 
 const Module = async ({
   params,

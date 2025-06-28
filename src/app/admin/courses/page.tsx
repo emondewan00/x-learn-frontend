@@ -31,7 +31,7 @@ export interface Course {
   modulesCount: number;
   lessonsCount: number;
 }
-const cookie_name = process.env.COOKIE_NAME || "authjs.session-token";
+const cookie_name = process.env.COOKIE_NAME || "session-token";
 const AdminCoursePage = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get(cookie_name)?.value;

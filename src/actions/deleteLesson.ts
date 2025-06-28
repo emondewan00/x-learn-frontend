@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
-const cookie_name = process.env.COOKIE_NAME || "authjs.session-token";
+const cookie_name = process.env.COOKIE_NAME || "session-token";
 
 const deleteLesson = async (lessonId: string) => {
   const cookieStore = await cookies();

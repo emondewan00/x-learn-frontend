@@ -7,7 +7,7 @@ import PDFInput from "../../_components/PDFInput";
 import DeleteLesson from "../_components/DeleteLesson";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
-const cookie_name = process.env.COOKIE_NAME || "authjs.session-token";
+const cookie_name = process.env.COOKIE_NAME || "session-token";
 
 const Lesson = async ({
   params,

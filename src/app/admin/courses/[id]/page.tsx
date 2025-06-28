@@ -8,7 +8,7 @@ import { cookies } from "next/headers";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 const resource_url = process.env.NEXT_PUBLIC_RESOURCE_URL + "/thumbnails/";
-const cookie_name = process.env.COOKIE_NAME || "authjs.session-token";
+const cookie_name = process.env.COOKIE_NAME || "session-token";
 
 const AdminCourseDetails = async ({
   params,
