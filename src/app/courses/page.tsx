@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import CourseCard from "@/components/CourseCard";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
