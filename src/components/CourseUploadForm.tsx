@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axiosClient from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
+import { toast } from "sonner";
 
 export default function CourseUploadForm() {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
@@ -41,25 +42,28 @@ export default function CourseUploadForm() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!thumbnailFile) return;
+    try {
+      if (!thumbnailFile) return;
 
-    const formData = new FormData();
-    formData.append("image", thumbnailFile);
-    formData.append("title", title);
-    formData.append("price", price);
-    formData.append("description", description);
+      const formData = new FormData();
+      formData.append("image", thumbnailFile);
+      formData.append("title", title);
+      formData.append("price", price);
+      formData.append("description", description);
 
-    const response = await axiosClient.post("/courses", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    if (response.status === 201) {
-      router.push(`/admin/courses/${response.data.data._id}`);
+      const response = await axiosClient.post("/courses", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toast.success("Course uploaded successfully");
+      if (response.status === 201) {
+        router.push(`/admin/courses/${response.data.data._id}`);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
     }
-
-    // handle error
   };
 
   return (

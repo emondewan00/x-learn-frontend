@@ -11,7 +11,7 @@ import Link from "next/link";
 import React from "react";
 import { cookies } from "next/headers";
 import Image from "next/image";
-import { revalidatePath } from "next/cache";
+import CourseDeleteButton from "./_components/CourseDeleteButton";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 const resource_url = process.env.NEXT_PUBLIC_RESOURCE_URL + "/thumbnails/";
@@ -103,31 +103,7 @@ const AdminCoursePage = async () => {
                   Edit
                 </Button>
 
-                <form
-                  action={async () => {
-                    "use server";
-                    const response = await fetch(
-                      `${base_url}/courses/${course._id}`,
-                      {
-                        method: "DELETE",
-                        headers: {
-                          Authorization: `Bearer ${token}`,
-                        },
-                      }
-                    );
-                    if (response.ok) {
-                      revalidatePath("/admin/courses");
-                    }
-                  }}
-                >
-                  <Button
-                    type="submit"
-                    size="sm"
-                    className="bg-red-600 hover:bg-red-700 ml-2 cursor-pointer"
-                  >
-                    Delete
-                  </Button>
-                </form>
+                <CourseDeleteButton courseId={course._id} />
               </div>
             </div>
           </CardContent>
