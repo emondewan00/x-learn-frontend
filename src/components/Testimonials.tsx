@@ -58,6 +58,8 @@ export function Testimonials() {
 
               <div className="flex items-center mb-6">
                 <Image
+                  width={48}
+                  height={48}
                   src={testimonial.image}
                   alt={testimonial.name}
                   className="w-12 h-12 rounded-full object-cover mr-4"

@@ -42,7 +42,7 @@ const AdminCoursePage = async () => {
     },
   });
 
-  if (!response.ok) revalidatePath("/admin/courses");
+  if (!response.ok) return <div>Something went wrong</div>;
 
   const courses: { data: Course[] } = await response.json();
 
