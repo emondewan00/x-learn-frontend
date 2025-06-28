@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AuthSubmitButton from "@/components/AuthSubmitButton";
 import { toast } from "sonner";
+import axiosClient from "@/lib/axios";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -38,19 +39,9 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-      const response = await fetch(baseUrl + "/auth/register", {
-        method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axiosClient.post(`/auth/register`, formData);
 
-      if (!response.ok) return toast.error("Something went wrong");
-
-      const user = await response.json();
-      if (user) {
+      if (response.status === 201) {
         router.push("/login");
       }
     } catch (error) {

@@ -1,5 +1,6 @@
 "use server";
 import { signIn } from "@/auth";
+import axiosClient from "@/lib/axios";
 import { revalidatePath } from "next/cache";
 
 type FormData = {
@@ -9,22 +10,13 @@ type FormData = {
 
 const loginAction = async (formData: FormData) => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const res = await axiosClient.post("/auth/login", formData);
 
-    const response = await fetch(baseUrl + "/auth/login", {
-      method: "POST",
-      body: JSON.stringify(formData),
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.ok == false) {
+    if (res.status !== 200) {
       return { error: "Invalid credentials" };
     }
 
-    const user = await response.json();
+    const user = res.data;
 
     await signIn("credentials", user?.user);
 
