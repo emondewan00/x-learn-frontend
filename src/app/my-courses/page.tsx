@@ -96,9 +96,9 @@ const MyCourses = async () => {
                     Progress: {course.progress}%
                   </p>
                 </div>
-                <Button className="w-full ">
-                  <Link href={`/my-courses/${course._id}`}>View Course</Link>
-                </Button>
+                <Link href={`/my-courses/${course._id}`}>
+                  <Button className="w-full ">View Course</Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
